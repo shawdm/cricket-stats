@@ -10,6 +10,11 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
 
+app.get('/load', function (req, res) {
+  stats.init();
+  res.send('initialized')
+})
+
 app.post('/', function (req, res) {
   var player;
 
@@ -19,11 +24,13 @@ app.post('/', function (req, res) {
       var keyConcepts = req.body.instances[keys[i]].instance["_concept"];
       for (var j = 0; j < keyConcepts.length; j++) {
         if(keyConcepts[j] === "person") {
+            player = stats.batsmanAverage(req.body.instances[keys[i]].name)
           
           if(req.body.properties && req.body.properties.batting && req.body.properties.batting.name === "batsman:batting average:value") {
-            player = stats.batsmanAverage(req.body.instances[keys[i]].name)
+            res.send('the batting average is ' + player.battingAverage)
           }
-          res.send('the batting average is ' + player.battingAverage)
+
+          
         }
       }
     }
