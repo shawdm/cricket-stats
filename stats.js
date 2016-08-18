@@ -3,7 +3,7 @@ var YAML = require('yamljs');
 
 var INPUT_DIR = './cricsheet';
 var SOURCE_DOCS = [];
-var MAX_DOCS = 10000;
+var MAX_DOCS = 1000;
 
 function init(){
   var filenames = fs.readdirSync(INPUT_DIR);
@@ -83,8 +83,7 @@ function batsmanAverage(queryBatsman){
   }
 }
 
-init()
-
 module.exports = {
+  init: init,
   batsmanAverage: batsmanAverage
 }
