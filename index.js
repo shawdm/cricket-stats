@@ -20,7 +20,7 @@ app.post('/', function (req, res) {
 
   if (req.body.instances) {
     var keys = Object.keys(req.body.instances)
-    
+
     var containsPerson = false;
     var containsQualifier = false;
     var containsTeam = false;
@@ -28,7 +28,7 @@ app.post('/', function (req, res) {
     var teamName = false;
     for (var l = 0; l < keys.length; l++) {
       var keyInstanceConcepts = req.body.instances[keys[l]].instance["_concept"];
-      
+
       if(keyInstanceConcepts.indexOf("person") > -1) {
         containsPerson = true;
       }
@@ -51,7 +51,7 @@ app.post('/', function (req, res) {
           for (var j = 0; j < keyConcepts.length; j++) {
             if(keyConcepts[j] === "person") {
                 player = stats.batsmanAverage(req.body.instances[keys[i]].name)
-              
+
               var propertyAttributes = Object.keys(req.body.properties);
 
               for (var k = 0; k < propertyAttributes.length; k++) {
@@ -81,13 +81,13 @@ app.post('/', function (req, res) {
                   return res.send('the total matches is ' + player.totalMatches)
                 }
               }
-              
-              
+
+
             }
           }
         }
       } else if (containsQualifier && mapsTo != false) {
-        
+
         var propertyAttributes = Object.keys(req.body.properties);
 
         for (var k = 0; k < propertyAttributes.length; k++) {
@@ -96,7 +96,7 @@ app.post('/', function (req, res) {
           if(req.body.properties && prop.name === "batsman:batting average:value") {
             var playersList = stats.playersList();
             var player = stats.getBattingAverageExtremes(playersList, mapsTo, teamName)
-            
+
             return res.send("player: " + player.name + " batting average: " + player.battingAverage)
           }
 
@@ -105,6 +105,7 @@ app.post('/', function (req, res) {
       }
 
   }
+  res.send("I don't know.");
 
 });
 
