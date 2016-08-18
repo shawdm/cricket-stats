@@ -17,6 +17,77 @@ function init(){
   }
 }
 
+function getBattingAverageExtremes(playerList, qualifier, teamName) {
+  var playerNames = Object.keys(playerList);
+  var maxPlayer = false;
+  var minPlayer = false;
+  var sortedPlayers = []
+  for (var i = 0; i < playerNames.length; i++) {
+    var player = playerList[playerNames[i]];
+    if (player.totalGotOut === 0) {
+      player.totalGotOut = 1
+    }
+    var battingAverage = player.totalRuns / player.totalGotOut;
+
+    player.battingAverage = battingAverage;
+
+    if (teamName === false) {
+      sortedPlayers.push(player)
+    } else {
+      if (teamName === player.team) {
+        sortedPlayers.push(player) 
+      }
+    }
+  }
+
+  sortedPlayers.sort(function(a, b){
+    return b.battingAverage - a.battingAverage;
+  })
+
+  // for (var i = 0; i < 5; i++) {
+  //   console.log(sortedPlayers[i])
+  // }
+
+  if (qualifier === "a:max") {
+    return sortedPlayers[0];
+  } else {
+    return sortedPlayers[sortedPlayers.length -1];
+  }
+}
+
+function playersList() {
+  var playersList = {};
+  for (var k = 0; k < SOURCE_DOCS.length; k++) {
+    var statsObject = SOURCE_DOCS[k];
+    for (var i = 0; i < statsObject.innings.length; i++) {
+    var innings = Object.keys(statsObject.innings[i])
+    var team = statsObject.innings[i][innings].team;
+    var innings_deliveries = statsObject.innings[i][innings]['deliveries']
+
+      for (var j = 0; j < innings_deliveries.length; j++) {
+        var ball = Object.keys(innings_deliveries[j])
+        var batsman = innings_deliveries[j][ball]['batsman']
+        if(!playersList[batsman]) {
+          playersList[batsman] = {
+            name: batsman,
+            team: team,
+            totalRuns: 0,
+            totalGotOut: 0
+          }; 
+        }
+
+        var run = innings_deliveries[j][ball]['runs']['batsman'];
+        playersList[batsman].totalRuns = playersList[batsman].totalRuns + run;
+        if(innings_deliveries[j][ball]['wicket']) {
+          playersList[batsman].totalGotOut++;
+        }
+      }
+    }
+  }
+
+  return playersList;
+}
+
 function batsmanAverage(queryBatsman){
   var totalRuns = 0;
   var totalBalls = 0;
@@ -79,11 +150,13 @@ function batsmanAverage(queryBatsman){
     "totalGotOut" : totalWickets,
     "totalInnings" : totalInnings,
     "totalMatches" : totalMatches,
-    "battingAverage" : totalRuns / totalWickets
+    "battingAverage" : (totalRuns / totalWickets).toFixed(2)
   }
 }
 
 module.exports = {
   init: init,
-  batsmanAverage: batsmanAverage
+  batsmanAverage: batsmanAverage,
+  playersList: playersList,
+  getBattingAverageExtremes: getBattingAverageExtremes
 }
