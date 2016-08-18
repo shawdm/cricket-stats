@@ -3,11 +3,7 @@ var bodyParser = require('body-parser');
 var stats = require('./stats.js');
 var app = express();
 
-// {
-//   "concept": "player",
-//   "named_instance": "JE Root",
-//   "property": "batting average"
-// }
+
 
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -17,14 +13,22 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 app.post('/', function (req, res) {
   var player;
 
-  if(req.body.property && req.body.property === "batting average" &&
-    req.body.named_instance && req.body.concept === "player") {
+  if (req.body.instances) {
+    var keys = Object.keys(req.body.instances)
+    for (var i = 0; i < keys.length; i++) {
+      var keyConcepts = req.body.instances[keys[i]].instance["_concept"];
+      for (var j = 0; j < keyConcepts.length; j++) {
+        if(keyConcepts[j] === "person") {
+          
+          if(req.body.properties && req.body.properties.batting && req.body.properties.batting.name === "batsman:batting average:value") {
+            player = stats.batsmanAverage(req.body.instances[keys[i]].name)
+          }
+          res.send('the batting average is ' + player.battingAverage)
+        }
+      }
+    }
 
-    console.log('player name: ', req.body.named_instance)
-    player = stats.batsmanAverage(req.body.named_instance)
-    console.log('player obj: ', player)
   }
-  res.send('the batting average is ' + player.battingAverage)
 });
 
 
