@@ -1,0 +1,7 @@
+applications:
+- host: cricket-stats
+  name: cricket-stats
+  path: .
+  instances: 1
+  memory: 512M
+  timeout: 120

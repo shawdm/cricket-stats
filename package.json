@@ -1,0 +1,26 @@
+{
+  "name": "cricket-stats",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "yamljs": "^0.2.8"},
+  "devDependencies": {
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shawdm/cricket-stats.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shawdm/cricket-stats/issues"
+  },
+  "homepage": "https://github.com/shawdm/cricket-stats"
+}

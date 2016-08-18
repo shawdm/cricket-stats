@@ -12,7 +12,7 @@ var app = express();
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
-})); 
+}));
 
 app.post('/', function (req, res) {
   var player;
@@ -27,6 +27,22 @@ app.post('/', function (req, res) {
   res.send('the batting average is ' + player.battingAverage)
 });
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+  return false;
+}
+
+var port = normalizePort(process.env.PORT || '3000');
+
+app.listen(port, function () {
+  console.log('Example app listening on port '+port+'!');
 });

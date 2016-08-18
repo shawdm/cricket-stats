@@ -28,13 +28,13 @@ function batsmanAverage(queryBatsman){
 
   for (var k = 0; k < SOURCE_DOCS.length; k++) {
     var statsObject = SOURCE_DOCS[k];
-    var matchStartDay = new Date(statsObject.info.dates[0]).getTime(); 
+    var matchStartDay = new Date(statsObject.info.dates[0]).getTime();
     if(firstMatch === false || firstMatch > matchStartDay) {
       firstMatch = matchStartDay;
     }
 
     if(lastMatch === false || lastMatch < matchStartDay) {
-      lastMatch = matchStartDay; 
+      lastMatch = matchStartDay;
     }
 
     var batsmanInMatch = false;
@@ -63,12 +63,12 @@ function batsmanAverage(queryBatsman){
           if(innings_deliveries[j][ball]['wicket']) {
             totalWickets++;
           }
-        } 
-        
+        }
+
       }
     }
-  }  
-  
+  }
+
   if (totalWickets === 0) {
     totalWickets = 1;
   }
