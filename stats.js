@@ -76,7 +76,7 @@ function batsmanAverage(queryBatsman){
   return {
     "totalRuns" : totalRuns,
     "totalBalls" : totalBalls,
-    "totalWickets" : totalWickets,
+    "totalGotOut" : totalWickets,
     "totalInnings" : totalInnings,
     "totalMatches" : totalMatches,
     "battingAverage" : totalRuns / totalWickets

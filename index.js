@@ -26,10 +26,36 @@ app.post('/', function (req, res) {
         if(keyConcepts[j] === "person") {
             player = stats.batsmanAverage(req.body.instances[keys[i]].name)
           
-          if(req.body.properties && req.body.properties.batting && req.body.properties.batting.name === "batsman:batting average:value") {
-            res.send('the batting average is ' + player.battingAverage)
-          }
+          var propertyAttributes = Object.keys(req.body.properties);
 
+          for (var k = 0; k < propertyAttributes.length; k++) {
+            var prop = req.body.properties[propertyAttributes[k]];
+
+            if(req.body.properties && prop.name === "batsman:batting average:value") {
+              res.send('the batting average is ' + player.battingAverage)
+            }
+
+            if (req.body.properties && prop.name === "batsman:career runs:value") {
+              res.send('the total runs is ' + player.totalRuns)
+            }
+
+            if (req.body.properties && prop.name === "batsman:balls faced:value") {
+              res.send('the total balls faced is ' + player.totalBalls)
+            }
+
+            if (req.body.properties && prop.name === "batsman:total outs:value") {
+              res.send('the total outs ' + player.totalGotOut)
+            }
+
+            if (req.body.properties && prop.name === "batsman:batting innings:value") {
+              res.send('the total innings is ' + player.totalInnings)
+            }
+
+            if (req.body.properties && prop.name === "batsman:career matches:value") {
+              res.send('the total matches is ' + player.totalMatches)
+            }
+          }
+          
           
         }
       }
