@@ -15,3 +15,6 @@ Who has the most total outs?
 What is JE Roots batting average?
 How many career matches has JE Root played?
 How many balls faced has JE Root had?
+
+What Indian has the highest batting average?
+what England has the highest batting Average?
