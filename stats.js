@@ -57,7 +57,6 @@ function getPlayerStat(playersList, filter, qualifier, statFunction){
       sortedPlayers.push(player)
     }
     else{
-      console.log("f: " + filter.team + ' p:'+player.team);
       if(filter.team && filter.team == player.team){
         sortedPlayers.push(player);
       }
