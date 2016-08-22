@@ -90,11 +90,18 @@ app.post('/', function (req, res) {
         var playersList = stats.playersList();
         var propertyAttributes = Object.keys(req.body.properties);
 
+        var filter = {};
+        if(teamName){
+          filter.team = teamName;
+        }
+
+        console.log(filter);
+
         for (var k = 0; k < propertyAttributes.length; k++) {
           var prop = req.body.properties[propertyAttributes[k]];
 
           if(req.body.properties && prop.name === "batsman:batting average:value") {
-            player = stats.getPlayerStat(playersList, false, mapsTo, function(player){
+            player = stats.getPlayerStat(playersList, filter, mapsTo, function(player){
               var outs = player.totalGotOut;
               if(outs < 1){
                 outs = 1;
@@ -104,19 +111,19 @@ app.post('/', function (req, res) {
             return res.send(player.name + " (batting average: " + player.stat +')');
           }
           if(req.body.properties && prop.name === "batsman:career runs:value") {
-            player = stats.getPlayerStat(playersList, false, mapsTo, function(player){
+            player = stats.getPlayerStat(playersList, filter, mapsTo, function(player){
               return player.totalRuns;
             })
             return res.send(player.name + ' (runs:' + player.stat+')');
           }
           if(req.body.properties && prop.name === "batsman:balls faced:value") {
-            player = stats.getPlayerStat(playersList, false, mapsTo, function(player){
+            player = stats.getPlayerStat(playersList, filter, mapsTo, function(player){
               return player.ballsFaced;
             })
             return res.send(player.name + ' (balls faced:' + player.stat+')');
           }
           if(req.body.properties && prop.name === "batsman:total outs:value") {
-            player = stats.getPlayerStat(playersList, false, mapsTo, function(player){
+            player = stats.getPlayerStat(playersList, filter, mapsTo, function(player){
               return player.totalGotOut;
             })
             return res.send(player.name + ' (lost wickets:' + player.stat+')');

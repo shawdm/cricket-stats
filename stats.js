@@ -52,7 +52,16 @@ function getPlayerStat(playersList, filter, qualifier, statFunction){
 
     player.stat = statFunction(player);
 
-    sortedPlayers.push(player)
+    // if no filter is set add the player
+    if(!filter || Object.keys(filter).length == 0){
+      sortedPlayers.push(player)
+    }
+    else{
+      console.log("f: " + filter.team + ' p:'+player.team);
+      if(filter.team && filter.team == player.team){
+        sortedPlayers.push(player);
+      }
+    }
   }
 
   if(!sortedPlayers || sortedPlayers.length < 1){
