@@ -3,5 +3,5 @@ applications:
   name: cricket-stats
   path: .
   instances: 1
-  memory: 512M
+  memory: 1024M
   timeout: 180
