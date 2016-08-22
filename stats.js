@@ -2,19 +2,45 @@ var fs = require('fs');
 var YAML = require('yamljs');
 
 var INPUT_DIR = './cricsheet';
+var CACHED_DIR = './cached';
 var SOURCE_DOCS = [];
-var MAX_DOCS = 1000;
+var MAX_DOCS = 10000;
 
 function init(){
-  var filenames = fs.readdirSync(INPUT_DIR);
-  if(filenames){
-    for(var i=0; i < filenames.length && i < MAX_DOCS; i++){
-      if(filenames[i].endsWith('yaml')){
-        var statsObject = YAML.load(INPUT_DIR + '/' + filenames[i]);
-        SOURCE_DOCS.push(statsObject);
+
+  var cacheFile = CACHED_DIR + '/cached.json';
+  var cacheFileStats = fs.lstat(cacheFile, function(err, stats){
+    if(err){
+      console.log('No cached data file, creating a new one. This will take several minutes.');
+      var filenames = fs.readdirSync(INPUT_DIR);
+      if(filenames){
+        for(var i=0; i < filenames.length && i < MAX_DOCS; i++){
+          if(filenames[i].endsWith('yaml')){
+            var statsObject = YAML.load(INPUT_DIR + '/' + filenames[i]);
+            SOURCE_DOCS.push(statsObject);
+          }
+        }
       }
+
+      fs.writeFile(cacheFile, JSON.stringify(SOURCE_DOCS), 'utf8', function(){
+        console.log('Created cache file, ' + SOURCE_DOCS.length + " matches.");
+      });
     }
-  }
+    else{
+      console.log('Using cached data file.');
+      fs.readFile(cacheFile, function(err, data){
+        if(err){
+          console.log('Error');
+          console.log(err);
+        }
+        else{
+            SOURCE_DOCS = JSON.parse(data);
+            console.log('Read all cached data, ' + SOURCE_DOCS.length + " matches.");
+        }
+      });
+    }
+  });
+
 }
 
 function getBattingAverageExtremes(playerList, qualifier, teamName) {
@@ -35,7 +61,7 @@ function getBattingAverageExtremes(playerList, qualifier, teamName) {
       sortedPlayers.push(player)
     } else {
       if (teamName === player.team) {
-        sortedPlayers.push(player) 
+        sortedPlayers.push(player)
       }
     }
   }
@@ -73,7 +99,7 @@ function playersList() {
             team: team,
             totalRuns: 0,
             totalGotOut: 0
-          }; 
+          };
         }
 
         var run = innings_deliveries[j][ball]['runs']['batsman'];

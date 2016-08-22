@@ -3,9 +3,7 @@ var bodyParser = require('body-parser');
 var stats = require('./stats.js');
 var app = express();
 
-
-
-app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
@@ -109,7 +107,6 @@ app.post('/', function (req, res) {
 
 });
 
-
 function normalizePort(val) {
   var port = parseInt(val, 10);
   if (isNaN(port)) {
@@ -123,7 +120,11 @@ function normalizePort(val) {
   return false;
 }
 
+// see if port is sent in env
 var port = normalizePort(process.env.PORT || '3000');
+
+// initialise stats to load data
+stats.init();
 
 app.listen(port, function () {
   console.log('Example app listening on port '+port+'!');
