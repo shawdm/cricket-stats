@@ -1,6 +1,15 @@
 # Cricket Stats
 
+## Setup
+Requires Vagrant.
+    vagrant up
+    vagrant ssh
+    cd /vagrant
+    npm install
+
 ## Starting Up
+    npm start
+
 
 ## Example Questions
 Who has faced the most balls faced?
@@ -18,3 +27,8 @@ How many balls faced has JE Root had?
 
 What Indian has the highest batting average?
 what England has the highest batting Average?
+
+How many runs has JE Root scored against Australia?
+What is JE root batting average against Australia?
+How many career matches has JE Root played against Australia?
+How many balls faced has JE Root had against Australia?
