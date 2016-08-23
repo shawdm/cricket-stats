@@ -43,13 +43,63 @@ app.post('/', function (req, res) {
       }
     }
 
-    if(containsPerson) {
+    if(containsPerson && containsTeam){
+      var playerName = false;
+      var teamName = false;
+      for (var i = 0; i < keys.length; i++) {
+        var keyConcepts = req.body.instances[keys[i]].instance["_concept"];
+        for (var j = 0; j < keyConcepts.length; j++) {
+          if(keyConcepts[j] === "person") {
+            playerName = req.body.instances[keys[i]].name;
+          }
+          if(keyConcepts[j] === "team") {
+            teamName = req.body.instances[keys[i]].name;
+          }
+        }
+      }
+
+      if(req.body.properties){
+        var propertyAttributes = Object.keys(req.body.properties);
+        for (var k = 0; k < propertyAttributes.length; k++) {
+          var prop = req.body.properties[propertyAttributes[k]];
+          var batsmanStats = stats.batsmanAverageFilter(playerName,{oppositionTeam:teamName});
+          if(prop.name === 'player:scores against:team'){
+            return res.send('the total runs against '+ teamName+' is ' + batsmanStats.totalRuns)
+          }
+
+          if(prop.name === 'batsman:batting average:value'){
+            return res.send('the batting average against '+ teamName+' is ' + batsmanStats.battingAverage)
+          }
+
+          if (prop.name === "batsman:career runs:value") {
+            return res.send('the total runs against '+ teamName+' is ' + batsmanStats.totalRuns)
+          }
+
+          if (prop.name === "batsman:balls faced:value") {
+            return res.send('the total balls faced  against '+ teamName+' is ' + batsmanStats.totalBalls)
+          }
+
+          if (prop.name === "batsman:total outs:value") {
+            return res.send('the total outs against '+ teamName+' is ' + batsmanStats.totalGotOut)
+          }
+
+          if (prop.name === "batsman:batting innings:value") {
+            return res.send('the total innings against '+ teamName+' is ' + batsmanStats.totalInnings)
+          }
+
+          if (prop.name === "batsman:career matches:value") {
+            return res.send('the total matches against '+ teamName+' is ' + batsmanStats.totalMatches)
+          }
+        }
+      }
+    }
+    else if(containsPerson) {
         for (var i = 0; i < keys.length; i++) {
 
           var keyConcepts = req.body.instances[keys[i]].instance["_concept"];
           for (var j = 0; j < keyConcepts.length; j++) {
             if(keyConcepts[j] === "person") {
-                player = stats.batsmanAverage(req.body.instances[keys[i]].name)
+              player = stats.batsmanAverageFilter(req.body.instances[keys[i]].name,{});
 
               var propertyAttributes = Object.keys(req.body.properties);
 

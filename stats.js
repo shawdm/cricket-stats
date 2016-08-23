@@ -119,6 +119,97 @@ function playersList() {
 }
 
 
+function batsmanAverageFilter(queryBatsman, filter){
+ /*
+  * example filter
+  * {
+  *  oppositionTeam:'Australia'
+  * }
+  */
+
+  var totalRuns = 0;
+  var totalBalls = 0;
+  var totalWickets = 0;
+  var totalInnings = 0;
+  var totalMatches = 0;
+  var firstMatch = false;
+  var lastMatch = false;
+
+  for (var k = 0; k < SOURCE_DOCS.length; k++) {
+    var statsObject = SOURCE_DOCS[k];
+    var matchStartDay = new Date(statsObject.info.dates[0]).getTime();
+    if(firstMatch === false || firstMatch > matchStartDay) {
+      firstMatch = matchStartDay;
+    }
+
+    if(lastMatch === false || lastMatch < matchStartDay) {
+      lastMatch = matchStartDay;
+    }
+
+    var batsmanInMatch = false;
+    for (var i = 0; i < statsObject.innings.length; i++) {
+      var innings = Object.keys(statsObject.innings[i])
+      var innings_deliveries = statsObject.innings[i][innings]['deliveries']
+
+      var queryBatsmanBatted = false;
+      for (var j = 0; j < innings_deliveries.length; j++) {
+        var ball = Object.keys(innings_deliveries[j])
+        var batsman = innings_deliveries[j][ball]['batsman']
+
+        if(queryBatsman === batsman && matchFilter(filter, statsObject.info, statsObject.innings[i][innings], ball)) {
+          if (!batsmanInMatch) {
+            totalMatches++;
+            batsmanInMatch = true;
+          }
+
+          if(!queryBatsmanBatted){
+            totalInnings++;
+            queryBatsmanBatted = true;
+          }
+
+          var run = innings_deliveries[j][ball]['runs']['batsman'];
+          totalRuns = totalRuns + run;
+          totalBalls++;
+
+          if(innings_deliveries[j][ball]['wicket']) {
+            totalWickets++;
+          }
+        }
+      }
+    }
+  }
+
+  if (totalWickets === 0) {
+    totalWickets = 1;
+  }
+
+  return {
+    "totalRuns" : totalRuns,
+    "totalBalls" : totalBalls,
+    "totalGotOut" : totalWickets,
+    "totalInnings" : totalInnings,
+    "totalMatches" : totalMatches,
+    "battingAverage" : (totalRuns / totalWickets).toFixed(2)
+  }
+
+}
+
+function matchFilter(filter, match, innings, delivery){
+
+  if(filter){
+    if(filter.oppositionTeam){
+      if(match && match.teams && match.teams.length > 1){
+        if(match.teams[0] != filter.oppositionTeam && match.teams[1] != filter.oppositionTeam){
+          return false;
+        }
+      }
+    }
+  }
+
+  return true;
+}
+
+/*
 function batsmanAverage(queryBatsman){
   var totalRuns = 0;
   var totalBalls = 0;
@@ -184,11 +275,11 @@ function batsmanAverage(queryBatsman){
     "battingAverage" : (totalRuns / totalWickets).toFixed(2)
   }
 }
-
+*/
 
 module.exports = {
   init: init,
-  batsmanAverage: batsmanAverage,
+  batsmanAverageFilter: batsmanAverageFilter,
   playersList: playersList,
   getPlayerStat: getPlayerStat
 }
