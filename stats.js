@@ -107,7 +107,7 @@ function playersList() {
             ballsFaced: 0,
             totalRuns: 0,
             totalGotOut: 0,
-            totalMatchs: 0,
+            totalMatches: 0,
             totalInnings: 0,
             totalBattingInnings:0,
             totalBowlingInnings:0
@@ -116,11 +116,16 @@ function playersList() {
 
         // increment count of matches if not already done so for this player
         if(matchPlayers.indexOf(batsman) < 0){
-          playersList[batsman].totalInnings++;
-          playersList[batsman].totalBattingInnings++;
+          playersList[batsman].totalMatches++;
+          matchPlayers.push(batsman);
         }
 
         // increment count of innings if not already done so for this player
+        if(inningsPlayers.indexOf(batsman) < 0){
+          playersList[batsman].totalInnings++;
+          playersList[batsman].totalBattingInnings++;
+          inningsPlayers.push(batsman);
+        }
 
         playersList[batsman].ballsFaced++;
 

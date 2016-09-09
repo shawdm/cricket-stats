@@ -46,6 +46,8 @@ function answerSpecials(interpretation){
   var answer = false;
 
   // TODO currently just answering with single special, need to cope with multiple
+
+
   if(interpretation.result && interpretation.result.specials && interpretation.result.specials.length > 0){
     var special = interpretation.result.specials[0];
     // TODO currently just assuming single predicte
@@ -74,6 +76,12 @@ function answerSpecials(interpretation){
       }
       if(predicatePropertyName == 'balls faced'){
         playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statBallsFaced);
+      }
+      if(predicatePropertyName == 'career matches'){
+        playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statTotalMatches);
+      }
+      if(predicatePropertyName == 'innings'){
+        playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statTotalInnings);
       }
 
       if(playerStats){
@@ -112,8 +120,9 @@ function answerProperties(interpretation){
       entityPropertyName = property.entities[0]['property name'];
     }
 
-    // look for the qualifier
+    // look for the qualifier and people
     var qualifier = false;
+    var person = false;
     if(interpretation.result.instances && interpretation.result.instances.length > 0){
       for(var i=0; i < interpretation.result.instances.length; i++){
         var instance = interpretation.result.instances[i];
@@ -124,12 +133,13 @@ function answerProperties(interpretation){
             if(instanceEntity._concept.indexOf('qualifier') >= 0 && instanceEntity["maps to"]){
               qualifier = instanceEntity["maps to"];
             }
+            if(instanceEntity._concept.indexOf('person') >= 0 && instanceEntity["_id"]){
+              person = instanceEntity["_id"];
+            }
           }
         }
       }
     }
-
-    //console.log('qualifier: ' + qualifier);
 
     if(entityPropertyName && qualifier){
       console.log('looking for '+  entityPropertyName + " " + qualifier);
@@ -146,10 +156,12 @@ function answerProperties(interpretation){
       else if(entityPropertyName === 'total outs'){
         playerStats = stats.getPlayerStat(players, false, qualifier, stats.statWicketsLost);
       }
-      else if(entityPropertyName === 'batting innings'){
-        //playerStats = stats.getPlayerStat(players, false, qualifier, stats.statTotalInnings);
+      else if(entityPropertyName === 'career matches'){
+        playerStats = stats.getPlayerStat(players, false, qualifier, stats.statTotalMatches);
       }
-
+      else if(entityPropertyName === 'innings'){
+        playerStats = stats.getPlayerStat(players, false, qualifier, stats.statTotalInnings);
+      }
 
       if(playerStats){
         answer = {
@@ -164,8 +176,32 @@ function answerProperties(interpretation){
       }
 
     }
+    else if(entityPropertyName && person){
+      console.log('looking for '+  entityPropertyName + " " + person);
+
+      var players = stats.playersList();
+      var playerStats = false;
+
+      if(entityPropertyName === 'innings'){
+          playerStats = stats.getPlayerStat(players, {player:person}, false, stats.statTotalInnings);
+      }
+
+      if(playerStats){
+        answer = {
+          result_text: playerStats.stat,
+          chatty_text: person + ' has ' + playerStats.stat + ' ' + entityPropertyName + '.',
+          source: {
+            name:STATS_SOURCE,
+            url:STATS_SOURCE_URL
+          },
+          answer_confidence: 80
+        };
+      }
+    }
 
   }
+
+  console.log('finished attempting to answer via properties');
 
   return answer;
 }

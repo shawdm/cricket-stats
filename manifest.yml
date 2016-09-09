@@ -1,6 +1,6 @@
 applications:
-- host: cricket-stats
-  name: cricket-stats
+- host: cricket-v2-stats
+  name: cricket-v2-stats
   path: .
   instances: 1
   memory: 1024M
