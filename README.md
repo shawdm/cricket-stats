@@ -2,18 +2,20 @@
 
 ## Setup
 Requires Vagrant.
+
     vagrant up
     vagrant ssh
     cd /vagrant
     npm install
+
 
 ## Starting Up
     npm start
 
 
 ## Example Questions
-Who has faced the most balls faced?
-Who has faced the least balls faced?
+Who has the most balls faced?
+Who has the least balls faced?
 Who has the most runs?
 Who has the least runs?
 Who has the highest batting average?
@@ -32,3 +34,7 @@ How many runs has JE Root scored against Australia?
 What is JE root batting average against Australia?
 How many career matches has JE Root played against Australia?
 How many balls faced has JE Root had against Australia?
+
+
+## ToDo
+* Add in linked entities to find the team name from nationality

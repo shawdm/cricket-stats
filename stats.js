@@ -60,6 +60,9 @@ function getPlayerStat(playersList, filter, qualifier, statFunction){
       if(filter.team && filter.team == player.team){
         sortedPlayers.push(player);
       }
+      else if(filter.player && filter.player === player.name){
+        sortedPlayers.push(player);
+      }
     }
   }
 
@@ -71,7 +74,7 @@ function getPlayerStat(playersList, filter, qualifier, statFunction){
     return b.stat - a.stat;
   })
 
-  if (qualifier === "a:max") {
+  if (qualifier && qualifier === "a:max") {
     return sortedPlayers[0];
   }
   else {
@@ -84,11 +87,15 @@ function getPlayerStat(playersList, filter, qualifier, statFunction){
 function playersList() {
   var playersList = {};
   for (var k = 0; k < SOURCE_DOCS.length; k++) {
+    var matchPlayers = [];
+    // stats object for each match
     var statsObject = SOURCE_DOCS[k];
     for (var i = 0; i < statsObject.innings.length; i++) {
-    var innings = Object.keys(statsObject.innings[i])
-    var team = statsObject.innings[i][innings].team;
-    var innings_deliveries = statsObject.innings[i][innings]['deliveries']
+      // innings object for each innings
+      var inningsPlayers = [];
+      var innings = Object.keys(statsObject.innings[i])
+      var team = statsObject.innings[i][innings].team;
+      var innings_deliveries = statsObject.innings[i][innings]['deliveries'];
 
       for (var j = 0; j < innings_deliveries.length; j++) {
         var ball = Object.keys(innings_deliveries[j])
@@ -99,9 +106,21 @@ function playersList() {
             team: team,
             ballsFaced: 0,
             totalRuns: 0,
-            totalGotOut: 0
+            totalGotOut: 0,
+            totalMatchs: 0,
+            totalInnings: 0,
+            totalBattingInnings:0,
+            totalBowlingInnings:0
           };
         }
+
+        // increment count of matches if not already done so for this player
+        if(matchPlayers.indexOf(batsman) < 0){
+          playersList[batsman].totalInnings++;
+          playersList[batsman].totalBattingInnings++;
+        }
+
+        // increment count of innings if not already done so for this player
 
         playersList[batsman].ballsFaced++;
 
@@ -119,7 +138,7 @@ function playersList() {
 }
 
 
-function batsmanAverageFilter(queryBatsman, filter){
+function batsmanStats(queryBatsman, filter){
  /*
   * example filter
   * {
@@ -277,9 +296,50 @@ function batsmanAverage(queryBatsman){
 }
 */
 
+function statBattingAverage(player){
+  var outs = player.totalGotOut;
+  if(outs < 1){
+    outs = 1;
+  }
+  return player.totalRuns/outs;
+}
+
+function statWicketsLost(player){
+   return player.totalGotOut;
+}
+
+function statTotalRuns(player){
+   return player.totalRuns;
+}
+
+function statBallsFaced(player){
+   return player.ballsFaced;
+}
+
+
+function statTotalInnings(player){
+   return player.totalInnings;
+}
+
+function statTotalMatches(player){
+   return player.totalMatches;
+}
+
+
+/*
+has the value BI as ~ batting innings ~ and
+has the value BA as ~ career matches
+*/
+
 module.exports = {
   init: init,
-  batsmanAverageFilter: batsmanAverageFilter,
+  batsmanStats: batsmanStats,
   playersList: playersList,
-  getPlayerStat: getPlayerStat
+  getPlayerStat: getPlayerStat,
+  statTotalRuns: statTotalRuns,
+  statBattingAverage: statBattingAverage,
+  statBallsFaced: statBallsFaced,
+  statWicketsLost: statWicketsLost,
+  statTotalInnings:statTotalInnings,
+  statTotalMatches:statTotalMatches
 }

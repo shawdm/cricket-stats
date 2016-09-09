@@ -1,5 +1,6 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var answerer = require('./answerer');
 var stats = require('./stats.js');
 var app = express();
 
@@ -14,6 +15,38 @@ app.get('/load', function (req, res) {
 })
 
 app.post('/', function (req, res) {
+
+  if(!req.body.question || !req.body.question.text){
+    res.status(400).send('Invalid JSON in request. No question text is set.');
+  }
+  else if(req.body.interpretations && req.body.interpretations.length > 0){
+    var bestInterpretation = false;
+    for(var i=0; i < req.body.interpretations.length; i++){
+      if(req.body.interpretations[i] && req.body.interpretations[i].confidence){
+        if(bestInterpretation === false || bestInterpretation.confidence < req.body.interpretations[i].confidence){
+          bestInterpretation = req.body.interpretations[i];
+          if(!bestInterpretation.confidence){
+            // in case confidence has not been set
+            bestInterpretation.confidence = 0;
+          }
+        }
+      }
+    }
+    answerer.answer(req.body.question.text, bestInterpretation, function(err,answer){
+      if(err){
+        console.log(err);
+        res.status(500, err);
+      }
+      else{
+        res.json(answer);
+      }
+    });
+  }
+  else{
+    res.status(400).send('Invalid JSON in request. No valid interpretation could be found.');
+  }
+
+  /*
   var player;
 
   if (req.body.instances) {
@@ -185,6 +218,7 @@ app.post('/', function (req, res) {
 
   }
   res.send("I don't know.");
+  */
 
 });
 
