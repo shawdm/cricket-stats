@@ -108,11 +108,8 @@ function answerSpecials(interpretation){
 function answerProperties(interpretation){
   var answer = false;
 
-  console.log('attempting answer via properties');
-
-  // TODO currently just answering with single propertt, need to cope with multiple
   if(interpretation.result && interpretation.result.properties && interpretation.result.properties.length > 0){
-    var property = interpretation.result.properties[0];
+    var property = extractProperty(interpretation.result.properties);
     var entityPropertyName = false;
 
     // TODO currently assuming single property entity, need to cope with multiple
@@ -162,6 +159,10 @@ function answerProperties(interpretation){
       else if(entityPropertyName === 'innings'){
         playerStats = stats.getPlayerStat(players, false, qualifier, stats.statTotalInnings);
       }
+      else if(entityPropertyName === 'balls faced'){
+        playerStats = stats.getPlayerStat(players, false, qualifier, stats.statBallsFaced);
+      }
+
 
       if(playerStats){
         answer = {
@@ -206,6 +207,27 @@ function answerProperties(interpretation){
   return answer;
 }
 
+// return the property that spans the most number of words, the idea being that
+// is the most specific one
+function extractProperty(properties, order){
+  var property = false;
+
+  if(properties && properties.length > 0){
+    for(var i=0; i < properties.length; i++){
+      var testProperty = properties[i];
+      if(!property){
+        property = testProperty;
+      }
+      else if(testProperty['start position'] && testProperty['end position']){
+        if((testProperty['end position'] - testProperty['start position']) > (property['end position'] - property['start position'])){
+          property = testProperty;
+        }
+      }
+    }
+  }
+
+  return property;
+}
 
 module.exports = {
   answer: answer
