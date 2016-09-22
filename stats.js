@@ -84,59 +84,77 @@ function getPlayerStat(playersList, filter, qualifier, statFunction){
 }
 
 
-function playersList() {
+function infoFilterMatch(info, filter){
+  var match = true;
+
+  if(info && filter){
+    if(filter.team){
+      if(!info.teams || info.teams.indexOf(filter.team) < 0){
+        match = false;
+      }
+    }
+  }
+
+  return match;
+}
+
+function playersList(filter) {
   var playersList = {};
   for (var k = 0; k < SOURCE_DOCS.length; k++) {
     var matchPlayers = [];
     // stats object for each match
     var statsObject = SOURCE_DOCS[k];
-    for (var i = 0; i < statsObject.innings.length; i++) {
-      // innings object for each innings
-      var inningsPlayers = [];
-      var innings = Object.keys(statsObject.innings[i])
-      var team = statsObject.innings[i][innings].team;
-      var innings_deliveries = statsObject.innings[i][innings]['deliveries'];
+    if(!filter || infoFilterMatch(statsObject.info, filter)){
+      //console.dir(statsObject.info);
+      for (var i = 0; i < statsObject.innings.length; i++) {
+        // innings object for each innings
+        var inningsPlayers = [];
+        var innings = Object.keys(statsObject.innings[i])
+        var team = statsObject.innings[i][innings].team;
+        var innings_deliveries = statsObject.innings[i][innings]['deliveries'];
 
-      for (var j = 0; j < innings_deliveries.length; j++) {
-        var ball = Object.keys(innings_deliveries[j])
-        var batsman = innings_deliveries[j][ball]['batsman']
-        if(!playersList[batsman]) {
-          playersList[batsman] = {
-            name: batsman,
-            team: team,
-            ballsFaced: 0,
-            totalRuns: 0,
-            totalGotOut: 0,
-            totalMatches: 0,
-            totalInnings: 0,
-            totalBattingInnings:0,
-            totalBowlingInnings:0
-          };
-        }
+        for (var j = 0; j < innings_deliveries.length; j++) {
+          var ball = Object.keys(innings_deliveries[j])
+          var batsman = innings_deliveries[j][ball]['batsman']
+          if(!playersList[batsman]) {
+            playersList[batsman] = {
+              name: batsman,
+              team: team,
+              ballsFaced: 0,
+              totalRuns: 0,
+              totalGotOut: 0,
+              totalMatches: 0,
+              totalInnings: 0,
+              totalBattingInnings:0,
+              totalBowlingInnings:0
+            };
+          }
 
-        // increment count of matches if not already done so for this player
-        if(matchPlayers.indexOf(batsman) < 0){
-          playersList[batsman].totalMatches++;
-          matchPlayers.push(batsman);
-        }
+          // increment count of matches if not already done so for this player
+          if(matchPlayers.indexOf(batsman) < 0){
+            playersList[batsman].totalMatches++;
+            matchPlayers.push(batsman);
+          }
 
-        // increment count of innings if not already done so for this player
-        if(inningsPlayers.indexOf(batsman) < 0){
-          playersList[batsman].totalInnings++;
-          playersList[batsman].totalBattingInnings++;
-          inningsPlayers.push(batsman);
-        }
+          // increment count of innings if not already done so for this player
+          if(inningsPlayers.indexOf(batsman) < 0){
+            playersList[batsman].totalInnings++;
+            playersList[batsman].totalBattingInnings++;
+            inningsPlayers.push(batsman);
+          }
 
-        playersList[batsman].ballsFaced++;
+          playersList[batsman].ballsFaced++;
 
-        var run = innings_deliveries[j][ball]['runs']['batsman'];
-        playersList[batsman].totalRuns = playersList[batsman].totalRuns + run;
+          var run = innings_deliveries[j][ball]['runs']['batsman'];
+          playersList[batsman].totalRuns = playersList[batsman].totalRuns + run;
 
-        if(innings_deliveries[j][ball]['wicket']) {
-          playersList[batsman].totalGotOut++;
+          if(innings_deliveries[j][ball]['wicket']) {
+            playersList[batsman].totalGotOut++;
+          }
         }
       }
     }
+
   }
 
   return playersList;

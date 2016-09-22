@@ -45,11 +45,19 @@ function answer(questionText, interpretaion, callback){
 function answerSpecials(interpretation){
   var answer = false;
 
+  console.log('start answer specials');
   // TODO currently just answering with single special, need to cope with multiple
 
 
+
   if(interpretation.result && interpretation.result.specials && interpretation.result.specials.length > 0){
-    var special = interpretation.result.specials[0];
+    var special = extractSpecial(interpretation.result.specials)
+    console.log('got a special');
+    console.dir(special);
+
+    //var special = interpretation.result.specials[0];
+
+
     // TODO currently just assuming single predicte
     var predicatePropertyName = false;
     if(special.predicate && special.predicate.entities && special.predicate.entities.length > 0){
@@ -66,9 +74,51 @@ function answerSpecials(interpretation){
       }
 
     }
-    console.log("ppn:" + predicatePropertyName + " sid:" + subjectId);
 
-    if(predicatePropertyName && subjectId){
+    var objectId = false;
+    if(special['object instances'] && special['object instances'].length > 0){
+      // TODO assuming just single subject object
+      var objectInstance = special['object instances'][0];
+      // TODO assuming just single entity
+      if(objectInstance.entities && objectInstance.entities.length > 0){
+          objectId = objectInstance.entities[0]._id;
+      }
+
+    }
+
+    console.log("ppn:" + predicatePropertyName + " sid:" + subjectId + " oid:" + objectId);
+
+    if(predicatePropertyName && subjectId && objectId){
+
+      var playerStats = false;
+      if(predicatePropertyName === 'scores against'){
+        var players = stats.playersList({team:objectId});
+        playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statTotalRuns)
+      }
+      if(predicatePropertyName === 'batting average against'){
+        var players = stats.playersList({team:objectId});
+        playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statBattingAverage)
+      }
+      if(predicatePropertyName === 'matches played against'){
+        var players = stats.playersList({team:objectId});
+        playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statTotalMatches)
+      }
+      if(playerStats){
+        answer = {
+          result_text: playerStats.stat,
+          chatty_text: subjectId + '\'s ' + predicatePropertyName + ' '+ objectId + ' is ' + playerStats.stat,
+          source: {
+            name:STATS_SOURCE,
+            url:STATS_SOURCE_URL
+          },
+          answer_confidence: 100
+        };
+
+
+        console.log(predicatePropertyName + " is " + playerStats.stat);
+      }
+    }
+    else if(predicatePropertyName && subjectId){
       var players = stats.playersList();
       var playerStats = false;
       if(predicatePropertyName == 'batting average'){
@@ -101,11 +151,15 @@ function answerSpecials(interpretation){
     }
   }
 
+  console.log('end answer specials');
+
   return answer;
 }
 
 
 function answerProperties(interpretation){
+  console.log('start answer properties');
+
   var answer = false;
 
   if(interpretation.result && interpretation.result.properties && interpretation.result.properties.length > 0){
@@ -202,7 +256,7 @@ function answerProperties(interpretation){
 
   }
 
-  console.log('finished attempting to answer via properties');
+  console.log('end answer properties');
 
   return answer;
 }
@@ -228,6 +282,30 @@ function extractProperty(properties, order){
 
   return property;
 }
+
+
+// return the special that spans the most number of words, the idea being that
+// is the most specific one
+function extractSpecial(specials, order){
+  var special = false;
+
+  if(specials && specials.length > 0){
+    for(var i=0; i < specials.length; i++){
+      var testSpecial = specials[i];
+      if(!special){
+        special = testSpecial;
+      }
+      else if(testSpecial['start position'] && testSpecial['end position']){
+        if((testSpecial['end position'] - testSpecial['start position']) > (special['end position'] - special['start position'])){
+          special = testSpecial;
+        }
+      }
+    }
+  }
+
+  return special;
+}
+
 
 module.exports = {
   answer: answer
