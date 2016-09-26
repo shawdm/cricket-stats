@@ -31,8 +31,9 @@ Requires Vagrant.
 
 * ~How many runs has JE Root scored against Australia?~
 * ~What is JE root batting average against Australia?~
-* How many matches has JE Root played against Australia?
-* How many balls faced has JE Root had against Australia?
+* ~What is JE Roots matches played against India?~ (would like to phrase as: How many matches has JE Root played against India?)
+
+* ~What is JE Roots balls faced against India?~
 * How many runs has JE Root scored?
 
 * What Indian has the highest batting average?

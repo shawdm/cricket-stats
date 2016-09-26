@@ -103,6 +103,10 @@ function answerSpecials(interpretation){
         var players = stats.playersList({team:objectId});
         playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statTotalMatches)
       }
+      if(predicatePropertyName === 'balls faced against'){
+        var players = stats.playersList({team:objectId});
+        playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statBallsFaced)
+      }
       if(playerStats){
         answer = {
           result_text: playerStats.stat,
@@ -121,6 +125,9 @@ function answerSpecials(interpretation){
     else if(predicatePropertyName && subjectId){
       var players = stats.playersList();
       var playerStats = false;
+      if(predicatePropertyName == 'career runs'){
+        playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statTotalRuns);
+      }
       if(predicatePropertyName == 'batting average'){
         playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statBattingAverage);
       }
