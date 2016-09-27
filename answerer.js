@@ -19,26 +19,6 @@ function answer(questionText, interpretaion, callback){
     response.answers.push(answer);
   }
 
-/*
-  {
-    "question": {
-      "text": "what is underspin?"
-    },
-    "answers": [
-      {
-        "result_text": "Spin of a ball where the top of the ball rotates away...",
-        "chatty_text": "According to wikipedia ‘underspin’ means: Spin of a ball...",
-        "source": {
-          "name": "wikipedia:Glossary_of_tennis_terms",
-          "url": "http:\/\/en.wikipedia.org\/wiki\/Glossary_of_tennis_terms"
-        },
-        "answer_confidence": 100
-      }
-    ]
-  }
-  */
-
-
   return callback(false, response);
 }
 
@@ -46,17 +26,11 @@ function answerSpecials(interpretation){
   var answer = false;
 
   console.log('start answer specials');
-  // TODO currently just answering with single special, need to cope with multiple
-
-
 
   if(interpretation.result && interpretation.result.specials && interpretation.result.specials.length > 0){
     var special = extractSpecial(interpretation.result.specials)
     console.log('got a special');
     console.dir(special);
-
-    //var special = interpretation.result.specials[0];
-
 
     // TODO currently just assuming single predicte
     var predicatePropertyName = false;
@@ -288,6 +262,32 @@ function extractProperty(properties, order){
   }
 
   return property;
+}
+
+
+function extractSpecialTeam(specials, order){
+  var special = false;
+
+  if(specials && specials.length > 0){
+    for(var i=0; i < specials.length; i++){
+      var testSpecial = specials[i];
+      if(testSpecial && testSpecial.type && testSpecial.type == 'linked-instance'){
+        // TODO now see if it is a team one
+
+
+        if(!special){
+          special = testSpecial;
+        }
+        else if(testSpecial['start position'] && testSpecial['end position']){
+          if((testSpecial['end position'] - testSpecial['start position']) > (special['end position'] - special['start position'])){
+            special = testSpecial;
+          }
+        }
+      }
+    }
+  }
+
+  return special;
 }
 
 
