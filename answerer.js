@@ -30,7 +30,6 @@ function answerSpecials(interpretation){
   if(interpretation.result && interpretation.result.specials && interpretation.result.specials.length > 0){
     var special = extractSpecial(interpretation.result.specials)
     console.log('got a special');
-    console.dir(special);
 
     // TODO currently just assuming single predicte
     var predicatePropertyName = false;
@@ -145,7 +144,12 @@ function answerProperties(interpretation){
 
   if(interpretation.result && interpretation.result.properties && interpretation.result.properties.length > 0){
     var property = extractProperty(interpretation.result.properties);
+    var teamPropertyName = false;
     var entityPropertyName = false;
+
+    if(interpretation.result.specials){
+      teamPropertyName = extractSpecialTeam(interpretation.result.specials);
+    }
 
     // TODO currently assuming single property entity, need to cope with multiple
     if(property.entities && property.entities.length > 0){
@@ -175,9 +179,16 @@ function answerProperties(interpretation){
 
     if(entityPropertyName && qualifier){
       console.log('looking for '+  entityPropertyName + " " + qualifier);
-
-      var players = stats.playersList();
+      var players = false;
       var playerStats = false;
+
+      // a team name has been set
+      if(teamPropertyName){
+        players = stats.playersList({playsFor:teamPropertyName});
+      }
+      else{
+        players = stats.playersList();
+      }
 
       if(entityPropertyName === 'career runs'){
           playerStats = stats.getPlayerStat(players, false, qualifier, stats.statTotalRuns);
@@ -197,8 +208,6 @@ function answerProperties(interpretation){
       else if(entityPropertyName === 'balls faced'){
         playerStats = stats.getPlayerStat(players, false, qualifier, stats.statBallsFaced);
       }
-
-
       if(playerStats){
         answer = {
           result_text: playerStats.name,
@@ -210,7 +219,6 @@ function answerProperties(interpretation){
           answer_confidence: 90
         };
       }
-
     }
     else if(entityPropertyName && person){
       console.log('looking for '+  entityPropertyName + " " + person);
@@ -265,32 +273,6 @@ function extractProperty(properties, order){
 }
 
 
-function extractSpecialTeam(specials, order){
-  var special = false;
-
-  if(specials && specials.length > 0){
-    for(var i=0; i < specials.length; i++){
-      var testSpecial = specials[i];
-      if(testSpecial && testSpecial.type && testSpecial.type == 'linked-instance'){
-        // TODO now see if it is a team one
-
-
-        if(!special){
-          special = testSpecial;
-        }
-        else if(testSpecial['start position'] && testSpecial['end position']){
-          if((testSpecial['end position'] - testSpecial['start position']) > (special['end position'] - special['start position'])){
-            special = testSpecial;
-          }
-        }
-      }
-    }
-  }
-
-  return special;
-}
-
-
 // return the special that spans the most number of words, the idea being that
 // is the most specific one
 function extractSpecial(specials, order){
@@ -311,6 +293,28 @@ function extractSpecial(specials, order){
   }
 
   return special;
+}
+
+
+function extractSpecialTeam(specials, order){
+  var specialTeam = false;
+
+  if(specials && specials.length > 0){
+    for(var i=0; i < specials.length; i++){
+      var testSpecial = specials[i];
+      if(testSpecial && testSpecial.type && testSpecial.type == 'linked-instance' && testSpecial['linked instances']){
+        var linkedInstances = testSpecial['linked instances'];
+        for(var j=0; j < linkedInstances.length; j++){
+          var linkedInstance = linkedInstances[j];
+          if(linkedInstance && linkedInstance['_id'] && linkedInstance['_concept'] && linkedInstance['_concept'].indexOf('team')>-1){
+            specialTeam = linkedInstance['_id'];
+          }
+        }
+      }
+    }
+  }
+
+  return specialTeam;
 }
 
 
