@@ -25,6 +25,7 @@ Requires Vagrant.
 
 * ~What is JE Roots batting average?~
 * ~How many career matches has JE Root played?~
+
 * ~How many balls faced has JE Root had?~
 
 * ~How many runs has JE Root scored against Australia?~
@@ -41,6 +42,9 @@ Requires Vagrant.
 
 * ~What is Andrew Strauss's batting average?~
 * ~What Aussie has the highest batting average?~
+
+* Who has the highest batting average against New Zealand
+* How many matches has Sachin Tendulkar played?
 
 * What Aussie has the highest batting average in an ODI?
 * What Aussie has the highest batting average in an ODI first innings?
