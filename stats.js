@@ -271,80 +271,12 @@ function matchFilter(filter, match, innings, delivery){
   return true;
 }
 
-/*
-function batsmanAverage(queryBatsman){
-  var totalRuns = 0;
-  var totalBalls = 0;
-  var totalWickets = 0;
-  var totalInnings = 0;
-  var totalMatches = 0;
-  var firstMatch = false;
-  var lastMatch = false;
-
-  for (var k = 0; k < SOURCE_DOCS.length; k++) {
-    var statsObject = SOURCE_DOCS[k];
-    var matchStartDay = new Date(statsObject.info.dates[0]).getTime();
-    if(firstMatch === false || firstMatch > matchStartDay) {
-      firstMatch = matchStartDay;
-    }
-
-    if(lastMatch === false || lastMatch < matchStartDay) {
-      lastMatch = matchStartDay;
-    }
-
-    var batsmanInMatch = false;
-    for (var i = 0; i < statsObject.innings.length; i++) {
-      var innings = Object.keys(statsObject.innings[i])
-      var innings_deliveries = statsObject.innings[i][innings]['deliveries']
-
-      var queryBatsmanBatted = false;
-      for (var j = 0; j < innings_deliveries.length; j++) {
-        var ball = Object.keys(innings_deliveries[j])
-        var batsman = innings_deliveries[j][ball]['batsman']
-        if(queryBatsman === batsman) {
-          if (!batsmanInMatch) {
-            totalMatches++;
-            batsmanInMatch = true;
-          }
-
-          if(!queryBatsmanBatted){
-            totalInnings++;
-            queryBatsmanBatted = true;
-          }
-          var run = innings_deliveries[j][ball]['runs']['batsman'];
-          totalRuns = totalRuns + run;
-          totalBalls++;
-
-          if(innings_deliveries[j][ball]['wicket']) {
-            totalWickets++;
-          }
-        }
-
-      }
-    }
-  }
-
-  if (totalWickets === 0) {
-    totalWickets = 1;
-  }
-
-  return {
-    "totalRuns" : totalRuns,
-    "totalBalls" : totalBalls,
-    "totalGotOut" : totalWickets,
-    "totalInnings" : totalInnings,
-    "totalMatches" : totalMatches,
-    "battingAverage" : (totalRuns / totalWickets).toFixed(2)
-  }
-}
-*/
-
 function statBattingAverage(player){
   var outs = player.totalGotOut;
   if(outs < 1){
     outs = 1;
   }
-  return player.totalRuns/outs;
+  return Math.round(player.totalRuns/outs);
 }
 
 function statWicketsLost(player){
@@ -358,7 +290,6 @@ function statTotalRuns(player){
 function statBallsFaced(player){
    return player.ballsFaced;
 }
-
 
 function statTotalInnings(player){
    return player.totalInnings;

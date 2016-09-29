@@ -72,11 +72,11 @@ function answerSpecials(interpretation){
         var players = stats.playersList({team:objectId});
         playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statBattingAverage)
       }
-      if(predicatePropertyName === 'matches played against'){
+      if(predicatePropertyName === 'matches played against' || predicatePropertyName === 'played against'){
         var players = stats.playersList({team:objectId});
         playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statTotalMatches)
       }
-      if(predicatePropertyName === 'balls faced against'){
+      if(predicatePropertyName === 'balls faced against' || predicatePropertyName === 'faced against'){
         var players = stats.playersList({team:objectId});
         playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statBallsFaced)
       }
