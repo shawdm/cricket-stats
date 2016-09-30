@@ -129,6 +129,49 @@ function answerSpecials(interpretation){
         console.log(predicatePropertyName + " is " + playerStats.stat);
       }
     }
+    else if(predicatePropertyName && objectId){
+      console.log('got a pred ' +predicatePropertyName +'and and obj');
+
+      // need to get the quialifier
+      var qualifier = false;
+      if(interpretation.result.instances){
+        qualifier = extractQualifier(interpretation.result.instances);
+        console.log('and qualifier! ' + qualifier);
+        var playerStats = false;
+        var players = stats.playersList({team:objectId});
+
+        if(predicatePropertyName == 'career runs against'){
+          playerStats = stats.getPlayerStat(players, false, qualifier, stats.statTotalRuns);
+        }
+        if(predicatePropertyName == 'batting average against'){
+          playerStats = stats.getPlayerStat(players, false, qualifier, stats.statBattingAverage);
+        }
+        if(predicatePropertyName == 'balls faced against'){
+          playerStats = stats.getPlayerStat(players, false, qualifier, stats.statBallsFaced);
+        }
+        if(predicatePropertyName == 'career matches against'){
+          playerStats = stats.getPlayerStat(players, false, qualifier, stats.statTotalMatches);
+        }
+        if(predicatePropertyName == 'innings against'){
+          playerStats = stats.getPlayerStat(players, false, qualifier, stats.statTotalInnings);
+        }
+
+        if(playerStats){
+          answer = {
+            result_text: playerStats.name,
+            chatty_text: playerStats.name + ' has ' + playerStats.stat + ' ' + predicatePropertyName  + ' ' + objectId + '.',
+            source: {
+              name:STATS_SOURCE,
+              url:STATS_SOURCE_URL
+            },
+            answer_confidence: 90
+          };
+
+        }
+
+
+      }
+    }
   }
 
   console.log('end answer specials');
@@ -317,6 +360,27 @@ function extractSpecialTeam(specials, order){
   return specialTeam;
 }
 
+
+function extractQualifier(instances){
+  var qualifier = false;
+  if(instances && instances.length > 0){
+    for(var i=0; i < instances.length; i++){
+      var testInstance = instances[i];
+      if(testInstance.entities){
+          for(var j=0; j < testInstance.entities.length; j++){
+            var testEntity = testInstance.entities[j];
+            if(testEntity && testEntity['_concept'] && testEntity['_concept'].indexOf('qualifier') > -1){
+              qualifier = testEntity['maps to'];
+              console.log(qualifier);
+            }
+          }
+      }
+    }
+  }
+
+
+  return qualifier;
+}
 
 module.exports = {
   answer: answer

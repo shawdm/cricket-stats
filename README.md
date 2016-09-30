@@ -51,7 +51,7 @@ Requires [Vagrant](https://www.vagrantup.com).
 * ~What is Andrew Strauss's batting average?~
 * ~What Aussie has the highest batting average?~
 
-* Who has the highest batting average against New Zealand
+* Who has the highest batting average against New Zealand?
 * How many matches has Sachin Tendulkar played?
 
 * What Aussie has the highest batting average in an ODI?
