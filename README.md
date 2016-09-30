@@ -1,7 +1,15 @@
 # Cricket Stats
 
-## Setup
-Requires Vagrant.
+This cricket-stats component is responsible for answering stats based cricket questions.  It needs to be used with these other components.
+* https://github.com/ce-store/ce-store.git
+* https://github.com/shawdm/cricket-nodered
+* https://github.com/shawdm/cricket-ui.git
+
+
+## Development Setup
+Require cricsheet stats data.  Download data from http://cricsheet.org/downloads/all.zip and extract contents into ````cricsheet```` directory.
+
+Requires [Vagrant](https://www.vagrantup.com).
 
     vagrant up
     vagrant ssh
