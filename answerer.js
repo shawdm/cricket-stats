@@ -29,55 +29,53 @@ function answerSpecials(interpretation){
     var special = extractSpecial(interpretation.result.specials)
 
     // TODO currently just assuming single predicte
-    var predicatePropertyName = false;
+    var questionStatType = false;
     if(special.predicate && special.predicate.entities && special.predicate.entities.length > 0){
-      predicatePropertyName = special.predicate.entities[0]['property name'];
+      questionStatType = special.predicate.entities[0]['property name'];
     }
 
-    console.log("pred: " + predicatePropertyName);
-
-    var subjectId = false;
+    var questionPlayerName = false;
     if(special['subject instances'] && special['subject instances'].length > 0){
       // TODO assuming just single subject instance
       var subjectInstance = special['subject instances'][0];
       // TODO assuming just single entity
       if(subjectInstance.entities && subjectInstance.entities.length > 0){
-          subjectId = subjectInstance.entities[0]._id;
+          questionPlayerName = subjectInstance.entities[0]._id;
       }
     }
 
-    var objectId = false;
+    var questionTeamName = false;
     if(special['object instances'] && special['object instances'].length > 0){
       // TODO assuming just single subject object
       var objectInstance = special['object instances'][0];
       // TODO assuming just single entity
       if(objectInstance.entities && objectInstance.entities.length > 0){
-          objectId = objectInstance.entities[0]._id;
+          questionTeamName = objectInstance.entities[0]._id;
       }
     }
 
-    if(predicatePropertyName && subjectId && objectId){
+    if(questionStatType && questionPlayerName && questionTeamName){
       var playerStats = false;
-      if(predicatePropertyName === 'scores against'){
-        var players = stats.playersList({team:objectId});
-        playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statTotalRuns)
+      if(questionStatType === 'scores against'){
+        var players = stats.playersList({team:questionTeamName});
+        playerStats = stats.getPlayerStat(players, {player:questionPlayerName}, false, stats.statTotalRuns)
       }
-      if(predicatePropertyName === 'batting average against'){
-        var players = stats.playersList({team:objectId});
-        playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statBattingAverage)
+      if(questionStatType === 'batting average against'){
+        var players = stats.playersList({team:questionTeamName});
+        playerStats = stats.getPlayerStat(players, {player:questionPlayerName}, false, stats.statBattingAverage)
       }
-      if(predicatePropertyName === 'matches played against' || predicatePropertyName === 'played against'){
-        var players = stats.playersList({team:objectId});
-        playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statTotalMatches)
+      if(questionStatType === 'matches played against' || questionStatType === 'played against'){
+        var players = stats.playersList({team:questionTeamName});
+        playerStats = stats.getPlayerStat(players, {player:questionPlayerName}, false, stats.statTotalMatches)
       }
-      if(predicatePropertyName === 'balls faced against' || predicatePropertyName === 'faced against'){
-        var players = stats.playersList({team:objectId});
-        playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statBallsFaced)
+      if(questionStatType === 'balls faced against' || questionStatType === 'faced against'){
+        var players = stats.playersList({team:questionTeamName});
+        playerStats = stats.getPlayerStat(players, {player:questionPlayerName}, false, stats.statBallsFaced)
       }
       if(playerStats){
         answer = {
           result_text: playerStats.stat,
-          chatty_text: subjectId + '\'s ' + predicatePropertyName + ' '+ objectId + ' is ' + playerStats.stat,
+          chatty_text: questionPlayerName + '\'s ' + questionStatType + ' '+ questionTeamName + ' is ' + playerStats.stat,
           source: {
             name:STATS_SOURCE,
             url:STATS_SOURCE_URL
@@ -86,29 +84,29 @@ function answerSpecials(interpretation){
         };
       }
     }
-    else if(predicatePropertyName && subjectId){
+    else if(questionStatType && questionPlayerName){
       var players = stats.playersList();
       var playerStats = false;
-      if(predicatePropertyName == 'career runs'){
-        playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statTotalRuns);
+      if(questionStatType == 'career runs'){
+        playerStats = stats.getPlayerStat(players, {player:questionPlayerName}, false, stats.statTotalRuns);
       }
-      if(predicatePropertyName == 'batting average'){
-        playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statBattingAverage);
+      if(questionStatType == 'batting average'){
+        playerStats = stats.getPlayerStat(players, {player:questionPlayerName}, false, stats.statBattingAverage);
       }
-      if(predicatePropertyName == 'balls faced'){
-        playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statBallsFaced);
+      if(questionStatType == 'balls faced'){
+        playerStats = stats.getPlayerStat(players, {player:questionPlayerName}, false, stats.statBallsFaced);
       }
-      if(predicatePropertyName == 'career matches'){
-        playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statTotalMatches);
+      if(questionStatType == 'career matches'){
+        playerStats = stats.getPlayerStat(players, {player:questionPlayerName}, false, stats.statTotalMatches);
       }
-      if(predicatePropertyName == 'innings'){
-        playerStats = stats.getPlayerStat(players, {player:subjectId}, false, stats.statTotalInnings);
+      if(questionStatType == 'innings'){
+        playerStats = stats.getPlayerStat(players, {player:questionPlayerName}, false, stats.statTotalInnings);
       }
 
       if(playerStats){
         answer = {
           result_text: playerStats.stat,
-          chatty_text: subjectId + '\'s ' + predicatePropertyName + ' is ' + playerStats.stat,
+          chatty_text: questionPlayerName + '\'s ' + questionStatType + ' is ' + playerStats.stat,
           source: {
             name:STATS_SOURCE,
             url:STATS_SOURCE_URL
@@ -117,34 +115,34 @@ function answerSpecials(interpretation){
         };
       }
     }
-    else if(predicatePropertyName && objectId){
+    else if(questionStatType && questionTeamName){
       // need to get the quialifier
       var qualifier = false;
       if(interpretation.result.instances){
         qualifier = extractQualifier(interpretation.result.instances);
         var playerStats = false;
-        var players = stats.playersList({team:objectId});
+        var players = stats.playersList({team:questionTeamName});
 
-        if(predicatePropertyName == 'runs against' || predicatePropertyName == 'career runs against'){
+        if(questionStatType == 'runs against' || questionStatType == 'career runs against'){
           playerStats = stats.getPlayerStat(players, false, qualifier, stats.statTotalRuns);
         }
-        if(predicatePropertyName == 'batting average against'){
+        if(questionStatType == 'batting average against'){
           playerStats = stats.getPlayerStat(players, false, qualifier, stats.statBattingAverage);
         }
-        if(predicatePropertyName == 'balls faced against'){
+        if(questionStatType == 'balls faced against'){
           playerStats = stats.getPlayerStat(players, false, qualifier, stats.statBallsFaced);
         }
-        if(predicatePropertyName == 'career matches against'){
+        if(questionStatType == 'career matches against'){
           playerStats = stats.getPlayerStat(players, false, qualifier, stats.statTotalMatches);
         }
-        if(predicatePropertyName == 'innings against'){
+        if(questionStatType == 'innings against'){
           playerStats = stats.getPlayerStat(players, false, qualifier, stats.statTotalInnings);
         }
 
         if(playerStats){
           answer = {
             result_text: playerStats.name,
-            chatty_text: playerStats.name + ' has ' + playerStats.stat + ' ' + predicatePropertyName  + ' ' + objectId + '.',
+            chatty_text: playerStats.name + ' has ' + playerStats.stat + ' ' + questionStatType  + ' ' + questionTeamName + '.',
             source: {
               name:STATS_SOURCE,
               url:STATS_SOURCE_URL
