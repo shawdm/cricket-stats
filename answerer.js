@@ -168,7 +168,7 @@ function answerProperties(interpretation){
   if(interpretation.result && interpretation.result.properties && interpretation.result.properties.length > 0){
     var property = extractProperty(interpretation.result.properties);
     var teamPropertyName = false;
-    var entityPropertyName = false;
+    var questionStatType = false;
 
     if(interpretation.result.specials){
       teamPropertyName = extractSpecialTeam(interpretation.result.specials);
@@ -176,12 +176,13 @@ function answerProperties(interpretation){
 
     // TODO currently assuming single property entity, need to cope with multiple
     if(property.entities && property.entities.length > 0){
-      entityPropertyName = property.entities[0]['property name'];
+      questionStatType = property.entities[0]['property name'];
     }
 
     // look for the qualifier and people
     var qualifier = false;
     var person = false;
+
     if(interpretation.result.instances && interpretation.result.instances.length > 0){
       for(var i=0; i < interpretation.result.instances.length; i++){
         var instance = interpretation.result.instances[i];
@@ -200,8 +201,7 @@ function answerProperties(interpretation){
       }
     }
 
-
-    if(entityPropertyName && qualifier){
+    if(questionStatType && qualifier){
       var players = false;
       var playerStats = false;
 
@@ -213,28 +213,28 @@ function answerProperties(interpretation){
         players = stats.playersList();
       }
 
-      if(entityPropertyName === 'career runs'){
+      if(questionStatType === 'career runs'){
           playerStats = stats.getPlayerStat(players, false, qualifier, stats.statTotalRuns);
       }
-      else if(entityPropertyName === 'batting average'){
+      else if(questionStatType === 'batting average'){
           playerStats = stats.getPlayerStat(players, false, qualifier, stats.statBattingAverage);
       }
-      else if(entityPropertyName === 'total outs'){
+      else if(questionStatType === 'total outs'){
         playerStats = stats.getPlayerStat(players, false, qualifier, stats.statWicketsLost);
       }
-      else if(entityPropertyName === 'career matches'){
+      else if(questionStatType === 'career matches'){
         playerStats = stats.getPlayerStat(players, false, qualifier, stats.statTotalMatches);
       }
-      else if(entityPropertyName === 'innings'){
+      else if(questionStatType === 'innings'){
         playerStats = stats.getPlayerStat(players, false, qualifier, stats.statTotalInnings);
       }
-      else if(entityPropertyName === 'balls faced'){
+      else if(questionStatType === 'balls faced'){
         playerStats = stats.getPlayerStat(players, false, qualifier, stats.statBallsFaced);
       }
       if(playerStats){
         answer = {
           result_text: playerStats.name,
-          chatty_text: playerStats.name + ' has ' + playerStats.stat + ' ' + entityPropertyName + '.',
+          chatty_text: playerStats.name + ' has ' + playerStats.stat + ' ' + questionStatType + '.',
           source: {
             name:STATS_SOURCE,
             url:STATS_SOURCE_URL
@@ -243,18 +243,18 @@ function answerProperties(interpretation){
         };
       }
     }
-    else if(entityPropertyName && person){
+    else if(questionStatType && person){
       var players = stats.playersList();
       var playerStats = false;
 
-      if(entityPropertyName === 'innings'){
+      if(questionStatType === 'innings'){
           playerStats = stats.getPlayerStat(players, {player:person}, false, stats.statTotalInnings);
       }
 
       if(playerStats){
         answer = {
           result_text: playerStats.stat,
-          chatty_text: person + ' has ' + playerStats.stat + ' ' + entityPropertyName + '.',
+          chatty_text: person + ' has ' + playerStats.stat + ' ' + questionStatType + '.',
           source: {
             name:STATS_SOURCE,
             url:STATS_SOURCE_URL
