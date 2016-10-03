@@ -51,8 +51,17 @@ Requires [Vagrant](https://www.vagrantup.com).
 * ~What is Andrew Strauss's batting average?~
 * ~What Aussie has the highest batting average?~
 
-* Who has the highest batting average against New Zealand?
-* How many matches has Sachin Tendulkar played?
+* ~Who has the highest batting average against India?~
+* ~Who has the highest batting average against New Zealand?~
+* ~What is Mominul Haque batting average against New Zealand?~
+* ~How many matches has Sachin Tendulkar played?~
+
+* Who has the most career runs against Australia?
+* Who has the most balls faced against Australia?
+* Who has the most career matches against Australia?
+* Who has the most innings against Australia?
+* Who has played the most matches against Australia?
+* Who has played the most innings against Australia?
 
 * What Aussie has the highest batting average in an ODI?
 * What Aussie has the highest batting average in an ODI first innings?

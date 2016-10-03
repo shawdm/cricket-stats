@@ -103,8 +103,17 @@ function playerFilterMatch(player, filter){
   var match = true;
 
   if(player && filter){
+
+    // filter for team play is playing for
     if(filter.playsFor){
       if(player.team !== filter.playsFor){
+        match = false;
+      }
+    }
+
+    // filter for team player is playing against
+    if(filter.team){
+      if(player.oppositionTeam !== filter.team){
         match = false;
       }
     }
@@ -120,7 +129,6 @@ function playersList(filter) {
     // stats object for each match
     var statsObject = SOURCE_DOCS[k];
     if(!filter || infoFilterMatch(statsObject.info, filter)){
-      //console.dir(statsObject.info);
       for (var i = 0; i < statsObject.innings.length; i++) {
         // innings object for each innings
         var inningsPlayers = [];
@@ -128,11 +136,22 @@ function playersList(filter) {
         var team = statsObject.innings[i][innings].team;
         var innings_deliveries = statsObject.innings[i][innings]['deliveries'];
 
+        var oppositionTeam = false;
+        if(statsObject.info.teams && statsObject.info.teams.length == 2){
+          if(statsObject.info.teams[0] === team){
+            oppositionTeam = statsObject.info.teams[1];
+          }
+          else{
+            oppositionTeam = statsObject.info.teams[0];
+          }
+        }
+
+
         for (var j = 0; j < innings_deliveries.length; j++) {
           var ball = Object.keys(innings_deliveries[j])
           var batsman = innings_deliveries[j][ball]['batsman'];
 
-          if(!filter || playerFilterMatch({name:batsman, team:team},filter)){
+          if(!filter || playerFilterMatch({name:batsman, team:team, oppositionTeam: oppositionTeam},filter)){
             if(!playersList[batsman]) {
               playersList[batsman] = {
                 name: batsman,
@@ -180,14 +199,8 @@ function playersList(filter) {
   return playersList;
 }
 
-
+/*
 function batsmanStats(queryBatsman, filter){
- /*
-  * example filter
-  * {
-  *  oppositionTeam:'Australia'
-  * }
-  */
 
   var totalRuns = 0;
   var totalBalls = 0;
@@ -255,7 +268,9 @@ function batsmanStats(queryBatsman, filter){
   }
 
 }
+*/
 
+/*
 function matchFilter(filter, match, innings, delivery){
 
   if(filter){
@@ -270,6 +285,7 @@ function matchFilter(filter, match, innings, delivery){
 
   return true;
 }
+*/
 
 function statBattingAverage(player){
   var outs = player.totalGotOut;
@@ -300,14 +316,8 @@ function statTotalMatches(player){
 }
 
 
-/*
-has the value BI as ~ batting innings ~ and
-has the value BA as ~ career matches
-*/
-
 module.exports = {
   init: init,
-  batsmanStats: batsmanStats,
   playersList: playersList,
   getPlayerStat: getPlayerStat,
   statTotalRuns: statTotalRuns,

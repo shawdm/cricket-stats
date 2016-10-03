@@ -25,17 +25,16 @@ function answer(questionText, interpretaion, callback){
 function answerSpecials(interpretation){
   var answer = false;
 
-  console.log('start answer specials');
-
   if(interpretation.result && interpretation.result.specials && interpretation.result.specials.length > 0){
     var special = extractSpecial(interpretation.result.specials)
-    console.log('got a special');
 
     // TODO currently just assuming single predicte
     var predicatePropertyName = false;
     if(special.predicate && special.predicate.entities && special.predicate.entities.length > 0){
       predicatePropertyName = special.predicate.entities[0]['property name'];
     }
+
+    console.log("pred: " + predicatePropertyName);
 
     var subjectId = false;
     if(special['subject instances'] && special['subject instances'].length > 0){
@@ -45,7 +44,6 @@ function answerSpecials(interpretation){
       if(subjectInstance.entities && subjectInstance.entities.length > 0){
           subjectId = subjectInstance.entities[0]._id;
       }
-
     }
 
     var objectId = false;
@@ -56,13 +54,9 @@ function answerSpecials(interpretation){
       if(objectInstance.entities && objectInstance.entities.length > 0){
           objectId = objectInstance.entities[0]._id;
       }
-
     }
 
-    console.log("ppn:" + predicatePropertyName + " sid:" + subjectId + " oid:" + objectId);
-
     if(predicatePropertyName && subjectId && objectId){
-
       var playerStats = false;
       if(predicatePropertyName === 'scores against'){
         var players = stats.playersList({team:objectId});
@@ -90,9 +84,6 @@ function answerSpecials(interpretation){
           },
           answer_confidence: 100
         };
-
-
-        console.log(predicatePropertyName + " is " + playerStats.stat);
       }
     }
     else if(predicatePropertyName && subjectId){
@@ -124,23 +115,17 @@ function answerSpecials(interpretation){
           },
           answer_confidence: 100
         };
-
-
-        console.log(predicatePropertyName + " is " + playerStats.stat);
       }
     }
     else if(predicatePropertyName && objectId){
-      console.log('got a pred ' +predicatePropertyName +'and and obj');
-
       // need to get the quialifier
       var qualifier = false;
       if(interpretation.result.instances){
         qualifier = extractQualifier(interpretation.result.instances);
-        console.log('and qualifier! ' + qualifier);
         var playerStats = false;
         var players = stats.playersList({team:objectId});
 
-        if(predicatePropertyName == 'career runs against'){
+        if(predicatePropertyName == 'runs against' || predicatePropertyName == 'career runs against'){
           playerStats = stats.getPlayerStat(players, false, qualifier, stats.statTotalRuns);
         }
         if(predicatePropertyName == 'batting average against'){
@@ -166,23 +151,20 @@ function answerSpecials(interpretation){
             },
             answer_confidence: 90
           };
-
         }
-
-
       }
     }
   }
 
-  console.log('end answer specials');
+  if(answer){
+    console.log('Answered by specials');
+  }
 
   return answer;
 }
 
 
 function answerProperties(interpretation){
-  console.log('start answer properties');
-
   var answer = false;
 
   if(interpretation.result && interpretation.result.properties && interpretation.result.properties.length > 0){
@@ -220,8 +202,8 @@ function answerProperties(interpretation){
       }
     }
 
+
     if(entityPropertyName && qualifier){
-      console.log('looking for '+  entityPropertyName + " " + qualifier);
       var players = false;
       var playerStats = false;
 
@@ -264,8 +246,6 @@ function answerProperties(interpretation){
       }
     }
     else if(entityPropertyName && person){
-      console.log('looking for '+  entityPropertyName + " " + person);
-
       var players = stats.playersList();
       var playerStats = false;
 
@@ -285,10 +265,11 @@ function answerProperties(interpretation){
         };
       }
     }
-
   }
 
-  console.log('end answer properties');
+  if(answer){
+    console.log('Answered by properties');
+  }
 
   return answer;
 }
@@ -311,7 +292,6 @@ function extractProperty(properties, order){
       }
     }
   }
-
   return property;
 }
 
@@ -334,7 +314,6 @@ function extractSpecial(specials, order){
       }
     }
   }
-
   return special;
 }
 
@@ -356,7 +335,6 @@ function extractSpecialTeam(specials, order){
       }
     }
   }
-
   return specialTeam;
 }
 
@@ -371,14 +349,11 @@ function extractQualifier(instances){
             var testEntity = testInstance.entities[j];
             if(testEntity && testEntity['_concept'] && testEntity['_concept'].indexOf('qualifier') > -1){
               qualifier = testEntity['maps to'];
-              console.log(qualifier);
             }
           }
       }
     }
   }
-
-
   return qualifier;
 }
 
