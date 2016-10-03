@@ -250,7 +250,6 @@ function answerProperties(interpretation){
       if(questionStatType === 'innings'){
           playerStats = stats.getPlayerStat(players, {player:person}, false, stats.statTotalInnings);
       }
-
       if(playerStats){
         answer = {
           result_text: playerStats.stat,
