@@ -1,4 +1,6 @@
+var moment = require('moment');
 var stats = require('./stats.js');
+
 
 var STATS_SOURCE = 'Cricsheet';
 var STATS_SOURCE_URL = 'http://cricsheet.org';
@@ -76,10 +78,7 @@ function answerSpecials(interpretation){
         answer = {
           result_text: playerStats.stat,
           chatty_text: questionPlayerName + '\'s ' + questionStatType + ' '+ questionTeamName + ' is ' + playerStats.stat,
-          source: {
-            name:STATS_SOURCE,
-            url:STATS_SOURCE_URL
-          },
+          source: generateSourceData(),
           answer_confidence: 100
         };
       }
@@ -107,10 +106,7 @@ function answerSpecials(interpretation){
         answer = {
           result_text: playerStats.stat,
           chatty_text: questionPlayerName + '\'s ' + questionStatType + ' is ' + playerStats.stat,
-          source: {
-            name:STATS_SOURCE,
-            url:STATS_SOURCE_URL
-          },
+          source: generateSourceData(),
           answer_confidence: 100
         };
       }
@@ -143,10 +139,7 @@ function answerSpecials(interpretation){
           answer = {
             result_text: playerStats.name,
             chatty_text: playerStats.name + ' has ' + playerStats.stat + ' ' + questionStatType  + ' ' + questionTeamName + '.',
-            source: {
-              name:STATS_SOURCE,
-              url:STATS_SOURCE_URL
-            },
+            source: generateSourceData(),
             answer_confidence: 90
           };
         }
@@ -235,10 +228,7 @@ function answerProperties(interpretation){
         answer = {
           result_text: playerStats.name,
           chatty_text: playerStats.name + ' has ' + playerStats.stat + ' ' + questionStatType + '.',
-          source: {
-            name:STATS_SOURCE,
-            url:STATS_SOURCE_URL
-          },
+          source: generateSourceData(),
           answer_confidence: 90
         };
       }
@@ -254,10 +244,7 @@ function answerProperties(interpretation){
         answer = {
           result_text: playerStats.stat,
           chatty_text: person + ' has ' + playerStats.stat + ' ' + questionStatType + '.',
-          source: {
-            name:STATS_SOURCE,
-            url:STATS_SOURCE_URL
-          },
+          source: generateSourceData(),
           answer_confidence: 80
         };
       }
@@ -352,6 +339,25 @@ function extractQualifier(instances){
     }
   }
   return qualifier;
+}
+
+
+function generateSourceData(){
+  var meta = stats.getMeta();
+
+  var data = {
+    url:STATS_SOURCE_URL
+  };
+
+  if(meta){
+    var parsedDate = moment(meta.created);
+    data.name = STATS_SOURCE + ' ' + meta.data_version + ' (as of ' + parsedDate.format('D MMMM YYYY') + ')';
+  }
+  else{
+    data.name = STATS_SOURCE;
+  }
+
+  return data;
 }
 
 module.exports = {
