@@ -20,6 +20,9 @@ function answer(questionText, interpretaion, callback){
   if(answer){
     response.answers.push(answer);
   }
+  else{
+    console.log('Not answered.');
+  }
 
   return callback(false, response);
 }
@@ -116,6 +119,9 @@ function answerSpecials(interpretation){
       var qualifier = false;
       if(interpretation.result.instances){
         qualifier = extractQualifier(interpretation.result.instances);
+
+        console.log('qualifier: ' + qualifier);
+
         var playerStats = false;
         var players = stats.playersList({team:questionTeamName});
 
@@ -128,7 +134,7 @@ function answerSpecials(interpretation){
         if(questionStatType == 'balls faced against'){
           playerStats = stats.getPlayerStat(players, false, qualifier, stats.statBallsFaced);
         }
-        if(questionStatType == 'career matches against'){
+        if(questionStatType == 'matches against' || questionStatType == 'career matches against'){
           playerStats = stats.getPlayerStat(players, false, qualifier, stats.statTotalMatches);
         }
         if(questionStatType == 'innings against'){
@@ -146,6 +152,8 @@ function answerSpecials(interpretation){
       }
     }
   }
+
+  console.log('qst: ' + questionStatType + ' qpn:' + questionPlayerName + ' qtn:'+ questionTeamName);
 
   if(answer){
     console.log('Answered by specials');
